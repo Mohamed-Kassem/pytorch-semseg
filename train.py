@@ -48,6 +48,7 @@ def train(args):
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
+    loss_arr = [-1]*len(trainloader)*(args.n_epoch+1)
     for epoch in range(args.n_epoch):
         for i, (images, labels) in enumerate(trainloader):
             if torch.cuda.is_available():
@@ -74,6 +75,7 @@ def train(args):
                 win=loss_window,
                 update='append')
 
+            loss_arr[i] = loss.data[0]
             if (i+1) % 20 == 0:
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
 
@@ -84,8 +86,10 @@ def train(args):
         # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
         # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
-
-        torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
+        np.save("loss_array_epoch_{}.npy".format(epoch), loss_arr)
+        # GCP storage!
+        if (i+1)%2 == 0:
+            torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
