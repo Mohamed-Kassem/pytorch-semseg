@@ -21,7 +21,7 @@ def validate(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, split=args.split, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4)
+    valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=2)
 
     # Setup Model
     model = torch.load(args.model_path)
@@ -31,6 +31,7 @@ def validate(args):
         model.cuda(0)
 
     gts, preds = [], []
+    print("Validation data size: ", len(valloader)*args.batch_size)
     for i, (images, labels) in tqdm(enumerate(valloader)):
         if torch.cuda.is_available():
             images = Variable(images.cuda(0))
@@ -40,7 +41,8 @@ def validate(args):
             labels = Variable(labels)
 
         outputs = model(images)
-        pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
+        # pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
+        pred = outputs.data.max(1)[1].cpu().numpy()
         gt = labels.data.cpu().numpy()
         
         for gt_, pred_ in zip(gt, pred):

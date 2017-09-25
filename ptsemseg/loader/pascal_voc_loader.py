@@ -141,16 +141,21 @@ class pascalVOCLoader(data.Dataset):
                 m.imsave(target_path + i + '.png', lbl)
 
 if __name__ == '__main__':
-    local_path = '/home/gpu_users/meetshah/segdata/pascal/VOCdevkit/VOC2012'
-    dst = pascalVOCLoader(local_path, is_transform=True)
-    trainloader = data.DataLoader(dst, batch_size=4)
+    # local_path = '/home/gpu_users/meetshah/segdata/pascal/VOCdevkit/VOC2012'
+    local_path = '/home/samy/Datasets/VOCdevkit/VOC2012'
+    dst = pascalVOCLoader(local_path, is_transform=True, img_size=4)
+    trainloader = data.DataLoader(dst, batch_size=1)
+    print(len(trainloader))
     for i, data in enumerate(trainloader):
         imgs, labels = data
-        if i == 0:
-            img = torchvision.utils.make_grid(imgs).numpy()
-            img = np.transpose(img, (1, 2, 0))
-            img = img[:, :, ::-1]
-            plt.imshow(img)
-            plt.show()
-            plt.imshow(dst.decode_segmap(labels.numpy()[i+1]))
-            plt.show()
+        # print(labels)
+        if i % 100 == 0:
+            print i
+        # if i == 0:
+        #     img = torchvision.utils.make_grid(imgs).numpy()
+        #     img = np.transpose(img, (1, 2, 0))
+        #     img = img[:, :, ::-1]
+        #     plt.imshow(img)
+        #     plt.show()
+        #     plt.imshow(dst.decode_segmap(labels.numpy()[i+1]))
+        #     plt.show()

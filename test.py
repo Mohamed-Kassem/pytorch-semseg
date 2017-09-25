@@ -47,7 +47,8 @@ def test(args):
         images = Variable(img)
 
     outputs = model(images)
-    pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
+    # pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1) # samy changed this from an issue in the repo
+    pred = outputs.data.max(1)[1].cpu().numpy()
     decoded = loader.decode_segmap(pred[0])
     print np.unique(pred)
     misc.imsave(args.out_path, decoded)

@@ -23,13 +23,13 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=2, shuffle=True)
 
     # Setup visdom for visualization
     vis = visdom.Visdom()
 
-    loss_window = vis.line(X=torch.zeros((1,)).cpu(),
-                           Y=torch.zeros((1)).cpu(),
+    loss_window = vis.line(X=torch.zeros((1,)).cpu().numpy(),
+                           Y=torch.zeros((1)).cpu().numpy(),
                            opts=dict(xlabel='minibatches',
                                      ylabel='Loss',
                                      title='Training Loss',
@@ -58,7 +58,7 @@ def train(args):
                 labels = Variable(labels)
 
             iter = len(trainloader)*epoch + i
-            poly_lr_scheduler(optimizer, args.l_rate, iter)
+            poly_lr_scheduler(optimizer, args.l_rate, iter, power=0)
             
             optimizer.zero_grad()
             outputs = model(images)
@@ -69,8 +69,8 @@ def train(args):
             optimizer.step()
 
             vis.line(
-                X=torch.ones((1, 1)).cpu() * i,
-                Y=torch.Tensor([loss.data[0]]).unsqueeze(0).cpu(),
+                X=torch.ones((1, 1)).cpu().numpy() * i,
+                Y=torch.Tensor([loss.data[0]]).unsqueeze(0).cpu().numpy(),
                 win=loss_window,
                 update='append')
 
