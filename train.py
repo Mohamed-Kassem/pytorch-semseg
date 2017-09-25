@@ -1,6 +1,6 @@
 import sys
 import torch
-import visdom
+# import visdom
 import argparse
 import numpy as np
 import torch.nn as nn
@@ -26,14 +26,14 @@ def train(args):
     trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=2, shuffle=True)
 
     # Setup visdom for visualization
-    vis = visdom.Visdom()
+    # vis = visdom.Visdom()
 
-    loss_window = vis.line(X=torch.zeros((1,)).cpu().numpy(),
-                           Y=torch.zeros((1)).cpu().numpy(),
-                           opts=dict(xlabel='minibatches',
-                                     ylabel='Loss',
-                                     title='Training Loss',
-                                     legend=['Loss']))
+    # loss_window = vis.line(X=torch.zeros((1,)).cpu().numpy(),
+    #                        Y=torch.zeros((1)).cpu().numpy(),
+    #                        opts=dict(xlabel='minibatches',
+    #                                  ylabel='Loss',
+    #                                  title='Training Loss',
+    #                                  legend=['Loss']))
 
     # Setup Model
     model = get_model(args.arch, n_classes)
@@ -69,11 +69,11 @@ def train(args):
             loss.backward()
             optimizer.step()
 
-            vis.line(
-                X=torch.ones((1, 1)).cpu().numpy() * i,
-                Y=torch.Tensor([loss.data[0]]).unsqueeze(0).cpu().numpy(),
-                win=loss_window,
-                update='append')
+            # vis.line(
+            #     X=torch.ones((1, 1)).cpu().numpy() * i,
+            #     Y=torch.Tensor([loss.data[0]]).unsqueeze(0).cpu().numpy(),
+            #     win=loss_window,
+            #     update='append')
 
             loss_arr[i] = loss.data[0]
             if (i+1) % 20 == 0:
