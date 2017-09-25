@@ -1,12 +1,12 @@
 {
   "pascal":
   {
-    "data_path": "/home/samy/Datasets/VOCdevkit/VOC2012"
+    "data_path": "~/VOCdevkit/VOC2012"
   },
 
   "sbd":
   {
-    "data_path": "/home/samy/Datasets/benchmark_RELEASE/"
+    "data_path": "~/benchmark_RELEASE/"
   },
 
   "camvid":
