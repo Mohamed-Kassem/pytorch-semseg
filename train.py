@@ -89,7 +89,7 @@ def train(args):
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
         np.save("loss_array_epoch_{}.npy".format(epoch), loss_arr)
         # GCP storage!
-        if (i+1)%2 == 0:
+        if (epoch+1)%2 == 0:
             torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
 
 if __name__ == '__main__':
