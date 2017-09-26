@@ -21,7 +21,7 @@ def validate(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, split=args.split, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4)
+    valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=2)
 
     # Setup Model
     model = torch.load(args.model_path)

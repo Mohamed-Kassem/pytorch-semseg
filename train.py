@@ -17,6 +17,7 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 import time
+import sys
 
 def train(args):
     # time start
@@ -27,7 +28,7 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=2, shuffle=True)
 
     # Setup visdom for visualization
     # vis = visdom.Visdom()
@@ -55,6 +56,7 @@ def train(args):
     loss_arr = [-1]*len(trainloader)*(args.n_epoch+1)
     for epoch in range(args.n_epoch):
         for i, (images, labels) in enumerate(trainloader):
+            print('iteration: {}'.format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
                 labels = Variable(labels.cuda(0))
@@ -117,4 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--feature_scale', nargs='?', type=int, default=1, 
                         help='Divider for # of features to use')    
     args = parser.parse_args()
+    #f = open("logs", 'w')
+    #sys.stdout = f
     train(args)
+    #f.close()
