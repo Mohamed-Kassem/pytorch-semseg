@@ -75,8 +75,6 @@ class fcn32s(nn.Module):
 
         score = self.classifier(conv5)
 
-        print(x.size()[2:])
-
         out = F.upsample_bilinear(score, x.size()[2:])
 
         return out
