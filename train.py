@@ -83,7 +83,7 @@ def train(args):
             if (i+1) % 20 == 0:
                 #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
                 end = time.time()
-                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time: %.4f" % (epoch+1, args.n_epoch, i, len(trainloader), loss.data[0], end-start))
+                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i, len(trainloader), loss.data[0], end-start))
                 start = time.time()
 
         # test_output = model(test_image)
