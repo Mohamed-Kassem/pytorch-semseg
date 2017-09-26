@@ -17,6 +17,7 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 import time
+import sys
 
 def train(args):
     # time start
@@ -117,4 +118,8 @@ if __name__ == '__main__':
     parser.add_argument('--feature_scale', nargs='?', type=int, default=1, 
                         help='Divider for # of features to use')    
     args = parser.parse_args()
+
+    f = open("logs", 'w')
+    sys.stdout = f
     train(args)
+    f.close()
