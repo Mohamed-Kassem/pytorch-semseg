@@ -17,7 +17,7 @@ from ptsemseg.metrics import scores
 from lr_scheduling import *
 
 import time
-import sys
+import os
 
 def train(args):
     # time start
@@ -53,9 +53,24 @@ def train(args):
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
+    if args.resume:
+        if os.path.isfile(args.resume):
+            print("=> loading checkpoint '{}'".format(args.resume))
+            checkpoint = torch.load(args.resume)
+            args.start_epoch = checkpoint['epoch']
+            #best_prec1 = checkpoint['best_prec1']
+            model.load_state_dict(checkpoint['state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer'])
+            print("=> loaded checkpoint '{}' (epoch {})"
+                  .format(args.resume, checkpoint['epoch']))
+        else:
+            print("=> no checkpoint found at '{}'".format(args.resume))
+
     loss_arr = [-1]*len(trainloader)*(args.n_epoch+1)
-    for epoch in range(args.n_epoch):
+    print("Train data size: ", len(trainloader)*args.batch_size)
+    for epoch in range(args.start_epoch, args.n_epoch):
         for i, (images, labels) in enumerate(trainloader):
+            print('iteration: {}'.format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
                 labels = Variable(labels.cuda(0))
@@ -94,10 +109,23 @@ def train(args):
         # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
         # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
-        np.save("loss_array_epoch_{}.npy".format(epoch), loss_arr)
+        np.save("loss_array_epoch_{}.npy".format(epoch+1), loss_arr)
         # GCP storage!
-        if (epoch+1)%2 == 0:
-            torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
+        #if (epoch+1)%2 == 0:
+            #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
+        save_checkpoint({
+                    'epoch': epoch + 1,
+                    'arch': args.arch,
+                    'state_dict': model.state_dict(),
+                    #'best_prec1': best_prec1,
+                    'optimizer' : optimizer.state_dict(),
+                }, False, epoch, 2)
+
+def save_checkpoint(state, is_best, epoch, max_to_keep=5, filename='checkpoint.pth.tar'):
+    filename = filename.split('.')[0] + '_' + str(epoch%max_to_keep) + '.' + '.'.join(filename.split('.')[1:])
+    torch.save(state, filename)
+    #if is_best:
+    #    shutil.copyfile(filename, 'model_best.pth.tar')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
@@ -116,10 +144,11 @@ if __name__ == '__main__':
     parser.add_argument('--l_rate', nargs='?', type=float, default=1e-5, 
                         help='Learning Rate')
     parser.add_argument('--feature_scale', nargs='?', type=int, default=1, 
-                        help='Divider for # of features to use')    
-    args = parser.parse_args()
+                        help='Divider for # of features to use')
+    parser.add_argument('--resume', default='', type=str, metavar='PATH',
+                        help='path to latest checkpoint (default: none)')
+    parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
+                    help='manual epoch number (useful on restarts)')
 
-    f = open("logs", 'w')
-    sys.stdout = f
+    args = parser.parse_args()
     train(args)
-    f.close()
