@@ -77,7 +77,8 @@ def train(args):
 
             loss_arr[i] = loss.data[0]
             if (i+1) % 20 == 0:
-                print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
+                #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
+                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, i, len(trainloader), loss.data[0]))
 
         # test_output = model(test_image)
         # predicted = loader.decode_segmap(test_output[0].cpu().data.numpy().argmax(0))
