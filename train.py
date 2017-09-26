@@ -18,8 +18,9 @@ from lr_scheduling import *
 
 import time
 
-start = 0
 def train(args):
+    # time start
+    start = 0
 
     # Setup Dataloader
     data_loader = get_loader(args.dataset)
