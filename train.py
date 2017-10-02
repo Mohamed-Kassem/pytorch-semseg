@@ -44,7 +44,9 @@ def train(args):
     model = get_model(args.arch, n_classes)
 
     if torch.cuda.is_available():
-        model.cuda(0)
+        #model.cuda(0)
+        model.cuda()
+        model = torch.nn.parallel.DistributedDataParallel(model)
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0).cuda(0))
     else:
