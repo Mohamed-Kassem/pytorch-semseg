@@ -70,7 +70,7 @@ def train(args):
     print("Train data size: ", len(trainloader)*args.batch_size)
     for epoch in range(args.start_epoch, args.n_epoch):
         for i, (images, labels) in enumerate(trainloader):
-            print('iteration: {}'.format(i))
+            #print('iteration: {}'.format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(args.cuda_index))
                 labels = Variable(labels.cuda(args.cuda_index))
@@ -109,24 +109,49 @@ def train(args):
         # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
         # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
-        np.save("loss_array_epoch_{}_{}_{}.npy".format(epoch+1, args.arch, args.batch_size), loss_arr)
         # GCP storage!
         #if (epoch+1)%2 == 0:
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
+        filename_prefix = args.arch+ '_' + str(args.batch_size)
         save_checkpoint({
                     'epoch': epoch + 1,
                     'arch': args.arch,
                     'state_dict': model.state_dict(),
                     #'best_prec1': best_prec1,
                     'optimizer' : optimizer.state_dict(),
-                }, False, epoch, args.arch+ '_' + str(args.batch_size)+'_checkpoint')
+                }, False, epoch, filename_prefix)
 
-def save_checkpoint(state, is_best, epoch, filename, max_to_keep=3):
-    filename_suffix = '.pth.tar'
-    filename = filename + '_' + str(epoch%max_to_keep) + filename_suffix
-    torch.save(state, filename)
+def save_checkpoint(state, is_best, epoch, filename_prefix, max_to_keep=3):
+    model_filename_prefix = filename_prefix + '_model_'
+    model_filename_suffix = '.pth.tar'
+    final_model_filename = model_filename_prefix + epoch + model_filename_suffix
+    torch.save(state, final_model_filename)
+    clean_exceeding_files(model_filename_prefix, max_to_keep)
+
+    loss_filename_prefix = filename_prefix + '_loss_array_'
+    loss_filename_suffix = '.npy'
+    final_loss_filename = loss_filename_prefix + epoch + loss_filename_suffix
+    np.save(final_loss_filename, loss_arr)
+    clean_exceeding_files(loss_filename_prefix, 1)
+
     #if is_best:
     #    shutil.copyfile(filename, 'model_best.pth.tar')
+
+# assumes filename is like this $PREFIX$EPOCH.$SUFFIX
+# assumes current directory only
+def clean_exceeding_files(filename_prefix, max_to_keep):
+    directory_filenames = os.listdir('./')
+    print(directory_filenames)
+    matched_filenames = []
+    for filename in directory_filenames:
+        if filename.startswith(filename_prefix):
+            matched_filenames.append(filename)
+    matched_filenames = sorted(matched_filenames, key=lambda filename: int(filename[ len(filename_prefix): filename.index('.')]) )
+    print(matched_filenames)
+    if len(matched_filenames) > max_to_keep:
+        delete_filenames = matched_filenames[:-max_to_keep]
+        for filename in delete_filenames:
+            os.remove(filename)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
