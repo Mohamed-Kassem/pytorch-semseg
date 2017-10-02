@@ -124,13 +124,13 @@ def train(args):
 def save_checkpoint(state, is_best, epoch, filename_prefix, max_to_keep=3):
     model_filename_prefix = filename_prefix + '_model_'
     model_filename_suffix = '.pth.tar'
-    final_model_filename = model_filename_prefix + epoch + model_filename_suffix
+    final_model_filename = model_filename_prefix + str(epoch) + model_filename_suffix
     torch.save(state, final_model_filename)
     clean_exceeding_files(model_filename_prefix, max_to_keep)
 
     loss_filename_prefix = filename_prefix + '_loss_array_'
     loss_filename_suffix = '.npy'
-    final_loss_filename = loss_filename_prefix + epoch + loss_filename_suffix
+    final_loss_filename = loss_filename_prefix + str(epoch) + loss_filename_suffix
     np.save(final_loss_filename, loss_arr)
     clean_exceeding_files(loss_filename_prefix, 1)
 
