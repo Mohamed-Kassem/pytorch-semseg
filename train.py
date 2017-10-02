@@ -154,4 +154,5 @@ if __name__ == '__main__':
                     help='Specify gpu index')
 
     args = parser.parse_args()
+    print("Training arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.cols, args.cuda_index))
     train(args)
