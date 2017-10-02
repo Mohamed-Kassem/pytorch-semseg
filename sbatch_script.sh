@@ -30,10 +30,10 @@ then
     # TRAIN
     echo "********** $1 **********"
     export CUDA_VISIBLE_DEVICES=0
-    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_fcn.out &
+    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 2 --cuda_index 0 > batch_size_1_fcn.out &
 
     export CUDA_VISIBLE_DEVICES=1
-    python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_segnet.out &
+    python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 2 --cuda_index 0 > batch_size_1_segnet.out &
 else
     echo "$1 is unrecognized input"
 fi
