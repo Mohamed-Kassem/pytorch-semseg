@@ -15,32 +15,28 @@
 #python validate.py --arch segnet --model_path val_segnet_epoch17.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 16 --split val
 #python validate.py --arch fcn8s --model_path val_fcn8s_epoch11.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 16 --split val
 
-# python validate.py --arch fcn8s --model_path val_fcn8s_epoch15.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > fcn8s-epoch15.out
-# python validate.py --arch segnet --model_path val_segnet_epoch23.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > segnet-epoch23.out
+if [ "$1" == "validate" ]
+then
+    #VALIDATION
+    echo "$1"
+    FCN_EPOCH=1
+    export CUDA_VISIBLE_DEVICES=0
+    python validate.py --arch fcn8s --model_path "val_fcn8s_epoch{$FCN_EPOCH}.pth.tar" --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > fcn8s-epoch{$FCN_EPOCH}.out &
+    SEG_EPOCH=1
+    export CUDA_VISIBLE_DEVICES=1
+    python validate.py --arch segnet --model_path val_segnet_epoch{$SEG_EPOCH}.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > segnet-epoch{$SEG_EPOCH}.out &
+elif [ "$1" == "train" ]
+then
+    # TRAIN
+    echo "$1"
+    export CUDA_VISIBLE_DEVICES=0
+    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_fcn.out &
 
-# cudaDevs=$(echo $CUDA_VISIBLE_DEVICES | sed -e 's/,/ /g')
-
-# for cudaDev in $cudaDevs
-# do
-#   echo cudaDev = $cudaDev
-#   #srun --gres=gpu:tesla:1 -n 1 --exclusive ./gpuMemTest.sh > gpuMemTest.out.$cudaDev 2>&1 &
-#   #$cudaMemTest --num_passes 1 --device $cudaDev > gpuMemTest.out.$cudaDev 2>&1 &
-
-#   if [ $cudaDev -eq 0 ]
-#   then
-#     python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_fcn_segnet.out.0 &
-#   else
-#     python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 1 > batch_size_1_fcn_segnet.out.1 &
-#   fi
-# done
-
-export CUDA_VISIBLE_DEVICES=0
-python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_fcn.out &
-
-export CUDA_VISIBLE_DEVICES=1
-python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_segnet.out &
-
-
+    export CUDA_VISIBLE_DEVICES=1
+    python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --cuda_index 0 > batch_size_1_segnet.out &
+else
+    echo "$1 is unrecognized input"
+fi
 
 
 wait
