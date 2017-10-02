@@ -44,9 +44,9 @@ def train(args):
     model = get_model(args.arch, n_classes)
 
     if torch.cuda.is_available():
-        model.cuda(0)
+        model.cuda(args.cuda_index)
         test_image, test_segmap = loader[0]
-        test_image = Variable(test_image.unsqueeze(0).cuda(0))
+        test_image = Variable(test_image.unsqueeze(0).cuda(args.cuda_index))
     else:
         test_image, test_segmap = loader[0]
         test_image = Variable(test_image.unsqueeze(0))
@@ -72,8 +72,8 @@ def train(args):
         for i, (images, labels) in enumerate(trainloader):
             print('iteration: {}'.format(i))
             if torch.cuda.is_available():
-                images = Variable(images.cuda(0))
-                labels = Variable(labels.cuda(0))
+                images = Variable(images.cuda(args.cuda_index))
+                labels = Variable(labels.cuda(args.cuda_index))
             else:
                 images = Variable(images)
                 labels = Variable(labels)
@@ -150,6 +150,8 @@ if __name__ == '__main__':
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
+    parser.add_argument('--cuda_index', default=0, type=int, metavar='N',
+                    help='Specify gpu index')
 
     args = parser.parse_args()
     train(args)
