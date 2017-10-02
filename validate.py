@@ -79,5 +79,5 @@ if __name__ == '__main__':
     parser.add_argument('--cuda_index', default=0, type=int, metavar='N',
                     help='Specify gpu index')
     args = parser.parse_args()
-    print("Validating arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.cols, args.cuda_index))
+    print("Validating arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.cuda_index))
     validate(args)
