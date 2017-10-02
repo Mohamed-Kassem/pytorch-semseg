@@ -31,14 +31,14 @@ def validate(args):
     model.eval()
 
     if torch.cuda.is_available():
-        model.cuda(0)
+        model.cuda(args.cuda_index)
 
     gts, preds = [], []
     print("Validation data size: ", len(valloader)*args.batch_size)
     for i, (images, labels) in tqdm(enumerate(valloader)):
         if torch.cuda.is_available():
-            images = Variable(images.cuda(0))
-            labels = Variable(labels.cuda(0))
+            images = Variable(images.cuda(args.cuda_index))
+            labels = Variable(labels.cuda(args.cuda_index))
         else:
             images = Variable(images)
             labels = Variable(labels)
@@ -76,5 +76,7 @@ if __name__ == '__main__':
                         help='Batch Size')
     parser.add_argument('--split', nargs='?', type=str, default='val', 
                         help='Split of dataset to test on')
+    parser.add_argument('--cuda_index', default=0, type=int, metavar='N',
+                    help='Specify gpu index')
     args = parser.parse_args()
     validate(args)
