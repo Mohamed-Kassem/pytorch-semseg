@@ -1,6 +1,6 @@
 import sys
 import torch
-import visdom
+#import visdom
 import argparse
 import numpy as np
 import torch.nn as nn
@@ -11,6 +11,7 @@ from torch.autograd import Variable
 from torch.utils import data
 from tqdm import tqdm
 
+from ptsemseg.models import get_model
 from ptsemseg.loader import get_loader, get_data_path
 from ptsemseg.metrics import scores
 
@@ -24,7 +25,9 @@ def validate(args):
     valloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4)
 
     # Setup Model
-    model = torch.load(args.model_path)
+    checkpoint = torch.load(args.model_path)
+    model = get_model(args.arch, n_classes)
+    model.load_state_dict(checkpoint['state_dict'])
     model.eval()
 
     if torch.cuda.is_available():
@@ -59,6 +62,8 @@ def validate(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
+    parser.add_argument('--arch', nargs='?', type=str, default='fcn8s', 
+                        help='Architecture to use [\'fcn8s, unet, segnet etc\']')
     parser.add_argument('--model_path', nargs='?', type=str, default='fcn8s_pascal_1_26.pkl', 
                         help='Path to the saved model')
     parser.add_argument('--dataset', nargs='?', type=str, default='pascal', 

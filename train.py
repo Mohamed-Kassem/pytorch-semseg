@@ -109,7 +109,7 @@ def train(args):
         # vis.image(test_image[0].cpu().data.numpy(), opts=dict(title='Input' + str(epoch)))
         # vis.image(np.transpose(target, [2,0,1]), opts=dict(title='GT' + str(epoch)))
         # vis.image(np.transpose(predicted, [2,0,1]), opts=dict(title='Predicted' + str(epoch)))
-        np.save("loss_array_epoch_{}.npy".format(epoch+1), loss_arr)
+        np.save("loss_array_epoch_{}_{}.npy".format(args.arch, epoch+1), loss_arr)
         # GCP storage!
         #if (epoch+1)%2 == 0:
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
@@ -119,10 +119,11 @@ def train(args):
                     'state_dict': model.state_dict(),
                     #'best_prec1': best_prec1,
                     'optimizer' : optimizer.state_dict(),
-                }, False, epoch, 2)
+                }, False, epoch, args.arch+'_checkpoint')
 
-def save_checkpoint(state, is_best, epoch, max_to_keep=5, filename='checkpoint.pth.tar'):
-    filename = filename.split('.')[0] + '_' + str(epoch%max_to_keep) + '.' + '.'.join(filename.split('.')[1:])
+def save_checkpoint(state, is_best, epoch, filename, max_to_keep=5):
+    filename_suffix = '.pth.tar'
+    filename = filename + '_' + str(epoch%max_to_keep) + filename_suffix
     torch.save(state, filename)
     #if is_best:
     #    shutil.copyfile(filename, 'model_best.pth.tar')
