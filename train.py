@@ -121,7 +121,7 @@ def train(args):
                     'optimizer' : optimizer.state_dict(),
                 }, False, epoch, args.arch+ '_' + str(args.batch_size)+'_checkpoint')
 
-def save_checkpoint(state, is_best, epoch, filename, max_to_keep=5):
+def save_checkpoint(state, is_best, epoch, filename, max_to_keep=3):
     filename_suffix = '.pth.tar'
     filename = filename + '_' + str(epoch%max_to_keep) + filename_suffix
     torch.save(state, filename)

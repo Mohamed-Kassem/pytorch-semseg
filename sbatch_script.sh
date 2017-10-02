@@ -16,7 +16,7 @@
 #python validate.py --arch fcn8s --model_path val_fcn8s_epoch11.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 16 --split val
 
 # python validate.py --arch fcn8s --model_path val_fcn8s_epoch15.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > fcn8s-epoch15.out
-# python validate.py --arch segnet --model_path val_segnet_epoch23.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > segnet-epoch18.out
+# python validate.py --arch segnet --model_path val_segnet_epoch23.pth.tar --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > segnet-epoch23.out
 
 # cudaDevs=$(echo $CUDA_VISIBLE_DEVICES | sed -e 's/,/ /g')
 
