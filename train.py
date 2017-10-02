@@ -119,9 +119,9 @@ def train(args):
                     'state_dict': model.state_dict(),
                     #'best_prec1': best_prec1,
                     'optimizer' : optimizer.state_dict(),
-                }, False, epoch, filename_prefix)
+                }, loss_arr, False, epoch, filename_prefix)
 
-def save_checkpoint(state, is_best, epoch, filename_prefix, max_to_keep=3):
+def save_checkpoint(state, loss_arr, is_best, epoch, filename_prefix, max_to_keep=3):
     model_filename_prefix = filename_prefix + '_model_'
     model_filename_suffix = '.pth.tar'
     final_model_filename = model_filename_prefix + str(epoch) + model_filename_suffix
@@ -141,13 +141,11 @@ def save_checkpoint(state, is_best, epoch, filename_prefix, max_to_keep=3):
 # assumes current directory only
 def clean_exceeding_files(filename_prefix, max_to_keep):
     directory_filenames = os.listdir('./')
-    print(directory_filenames)
     matched_filenames = []
     for filename in directory_filenames:
         if filename.startswith(filename_prefix):
             matched_filenames.append(filename)
     matched_filenames = sorted(matched_filenames, key=lambda filename: int(filename[ len(filename_prefix): filename.index('.')]) )
-    print(matched_filenames)
     if len(matched_filenames) > max_to_keep:
         delete_filenames = matched_filenames[:-max_to_keep]
         for filename in delete_filenames:
