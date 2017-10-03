@@ -333,6 +333,7 @@ class fcn8s(nn.Module):
         score += score_pool3
         if not self.kassem:
             out = F.upsample_bilinear(score, x.size()[2:])
+            print(out[0, :, 50:53, 50:53])
 
         # Kassem edges addition - start
         if self.kassem:
@@ -342,7 +343,9 @@ class fcn8s(nn.Module):
             edges_dir = torch.atan(y[:, 1:, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
             edges_cat = torch.cat((edges_mag, edges_dir), 1)
             edges_conv = self.edges_conv(edges_cat)
+            print(edges_conv[0, :, 50:53, 50:53])
             out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
+            print(out[0, :, 50:53, 50:53])
         # Kassem edges addition - end
 
         print(out.weight.data.shape)
