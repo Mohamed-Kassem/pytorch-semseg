@@ -122,7 +122,8 @@ def train(args):
         if (epoch+1)%args.validate_every == 0:
             print("Validation starting on epoch: ", epoch)
             validate(train_loader, model, n_classes)
-            validate(val_loader, model, n_classes)
+            #validate(val_loader, model, n_classes)
+            
             # filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(arg.l_rate)
             # save_checkpoint({
             #             'epoch': epoch + 1,
