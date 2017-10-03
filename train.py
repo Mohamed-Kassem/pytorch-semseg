@@ -166,6 +166,7 @@ def validate(val_loader, model, n_classes):
     # switch to evaluate mode
     model.eval()
 
+    gts, preds = [], []
     for i, (images, labels) in tqdm(enumerate(val_loader)):
         if torch.cuda.is_available():
             images = Variable(images.cuda(args.cuda_index))
