@@ -35,8 +35,8 @@ class pascalVOCLoader(data.Dataset):
             self.setup(pre_encode=True)
         else:
             self.setup(pre_encode=False)
-        self.files[self.split] = self.files['trainaug'][:100]
-        self.files[self.split] = self.files['val'][:100]
+        # self.files[self.split] = self.files['trainaug'][:100]
+        # self.files[self.split] = self.files['val'][:100]
 
     def __len__(self):
         return len(self.files[self.split])
