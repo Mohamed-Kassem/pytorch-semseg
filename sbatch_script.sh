@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --cpus-per-task=1
-#SBATCH --time=96:00:00
+#SBATCH --time=256:00:00
 #SBATCH --output=tmp-%j.out
 #output=batch_size_1_fcn_segnet.out
 
