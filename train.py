@@ -118,7 +118,7 @@ def train(args):
         # GCP storage!
         #if (epoch+1)%2 == 0:
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
-        if (epoch+1)%validate_every == 0:
+        if (epoch+1)%args.validate_every == 0:
             print("Validation starting on epoch: ", epoch)
             validate(train_loader, model, n_classes)
             validate(val_loader, model, n_classes)
