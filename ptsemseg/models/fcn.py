@@ -291,7 +291,6 @@ class fcn8s(nn.Module):
         # Kassem edges addition - start
         if self.kassem:
             self.get_edges = nn.Conv2d(3, 2, 3, padding=1, bias=False)
-            self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
@@ -305,6 +304,12 @@ class fcn8s(nn.Module):
                         m.weight.data.numpy()[0,:,:,:] = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
                         m.weight.data.numpy()[1,:,:,:] = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
                         # print('END NOTE')
+            # kassem adding edges
+            # self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+
+            # kassem concatenating edges
+            self.out_conv = nn.Conv2d(self.n_classes+2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+
             # print('Model for loop init finished')
         # print('Model init finished')
         # Kassem edges addition - end
@@ -353,7 +358,7 @@ class fcn8s(nn.Module):
             out_1 = F.upsample_bilinear(score, x.size()[2:])
             out_2 = torch.cat( (out_1, edges_cat), 1)
 
-            out = out_2
+            out = self.out_conv(out_2)
 
 
             # print('out')
