@@ -348,7 +348,6 @@ class fcn8s(nn.Module):
             print(out[0, :, 50:53, 50:53])
         # Kassem edges addition - end
 
-        print(out.weight.data.shape)
         print('Model forward finished')
 
         return out
