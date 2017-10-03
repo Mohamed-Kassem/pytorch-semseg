@@ -316,7 +316,7 @@ class fcn8s(nn.Module):
             # upscore.scale_factor = None
 
     def forward(self, x):
-        print('Model forward start')
+        # print('Model forward start')
         conv1 = self.conv_block1(x)
         conv2 = self.conv_block2(conv1)
         conv3 = self.conv_block3(conv2)
@@ -353,7 +353,7 @@ class fcn8s(nn.Module):
             # print(out[0, 0, 50:53, 50:53])
         # Kassem edges addition - end
 
-        print('Model forward finished')
+        # print('Model forward finished')
 
         return out
 
