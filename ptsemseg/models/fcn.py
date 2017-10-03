@@ -303,13 +303,14 @@ class fcn8s(nn.Module):
                         m.weight.data.numpy()[0,:,:,:] = np.array([
                             [-1,0,1],
                             [-2,0,2],
-                            [-1,0,1],                        
+                            [-1,0,1],
                         ])
                         m.weight.data.numpy()[1,:,:,:] = np.array([
                             [-1,-2,-1],
                             [0,0,0],
-                            [1,2,1],                        
+                            [1,2,1],
                         ])
+                        print('END NOTE')
             print('Model for loop init finished')
         print('Model init finished')
         # Kassem edges addition - end
