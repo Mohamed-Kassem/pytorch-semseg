@@ -19,12 +19,12 @@ if [ "$1" == "validate" ]
 then
     #VALIDATION
     echo "********** $1 **********"
-    FCN_EPOCH="$2"
+    FCN="$2"
     export CUDA_VISIBLE_DEVICES=0
-    python validate.py --arch fcn8s --model_path "val_fcn8s_epoch${FCN_EPOCH}.pth.tar" --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > "fcn8s-epoch${FCN_EPOCH}.out" &
-    SEG_EPOCH="$3"
+    python validate.py --arch fcn8s --model_path "${FCN}.pth.tar" --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > "${FCN}.out" &
+    SEG="$3"
     export CUDA_VISIBLE_DEVICES=1
-    python validate.py --arch segnet --model_path "val_segnet_epoch${SEG_EPOCH}.pth.tar" --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > "segnet-epoch${SEG_EPOCH}.out" &
+    python validate.py --arch segnet --model_path "${SEG}.pth.tar" --dataset pascal --img_rows 256 --img_cols 256 --batch_size 1 --split val --cuda_index 0 > "${SEG}.out" &
 elif [ "$1" == "train" ]
 then
     # TRAIN
