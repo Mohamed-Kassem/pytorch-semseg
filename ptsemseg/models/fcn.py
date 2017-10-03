@@ -333,6 +333,7 @@ class fcn8s(nn.Module):
         score += score_pool3
         if not self.kassem:
             out = F.upsample_bilinear(score, x.size()[2:])
+            print('out')
             print(out[0, 0, 50:53, 50:53])
 
         # Kassem edges addition - start
@@ -340,22 +341,22 @@ class fcn8s(nn.Module):
             y = self.get_edges(x)
 
 
-            print('get_edges:')
-            print(self.get_edges.weight.data.shape)
-            print(self.get_edges.weight[0, 0, 0:3, 0:3])
-            print(self.get_edges.weight[1, 0, 0:3, 0:3])
+            # print('get_edges:')
+            # print(self.get_edges.weight.data.shape)
+            # print(self.get_edges.weight[0, 0, 0:3, 0:3])
+            # print(self.get_edges.weight[1, 0, 0:3, 0:3])
 
-            
-            print('x:')
-            print(x.data.shape)
-            print(x.data[0, 0, 0:3, 0:3])
-            print(x.data[0, 1, 0:3, 0:3])
-            print(x.data[0, 2, 0:3, 0:3])
-            print('y0:')
-            print(y.data.shape)
-            print(y.data[0, 0, 0:3, 0:3])
-            print('y1:')
-            print(y.data[0, 1, 0:3, 0:3])
+
+            # print('x:')
+            # print(x.data.shape)
+            # print(x.data[0, 0, 0:3, 0:3])
+            # print(x.data[0, 1, 0:3, 0:3])
+            # print(x.data[0, 2, 0:3, 0:3])
+            # print('y0:')
+            # print(y.data.shape)
+            # print(y.data[0, 0, 0:3, 0:3])
+            # print('y1:')
+            # print(y.data[0, 1, 0:3, 0:3])
 
 
             y_squared = y*y
@@ -379,8 +380,8 @@ class fcn8s(nn.Module):
             # print('edges conv')
             # print(edges_conv[0, 0, 50:53, 50:53])
             out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
-            # print('out')
-            # print(out[0, 0, 50:53, 50:53])
+            print('out')
+            print(out[0, 0, 50:53, 50:53])
         # Kassem edges addition - end
 
         print('Model forward finished')
