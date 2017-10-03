@@ -30,6 +30,7 @@ def train(args):
     n_classes = loader.n_classes
     trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
 
+
     # Setup visdom for visualization
     # vis = visdom.Visdom()
 
@@ -43,15 +44,18 @@ def train(args):
     # Setup Model
     model = get_model(args.arch, n_classes)
 
-    if torch.cuda.is_available():
-        model.cuda(args.cuda_index)
-        test_image, test_segmap = loader[0]
-        test_image = Variable(test_image.unsqueeze(0).cuda(args.cuda_index))
-    else:
-        test_image, test_segmap = loader[0]
-        test_image = Variable(test_image.unsqueeze(0))
+    # if torch.cuda.is_available():
+    #     model.cuda(args.cuda_index)
+    #     test_image, test_segmap = loader[0]
+    #     test_image = Variable(test_image.unsqueeze(0).cuda(args.cuda_index))
+    # else:
+    #     test_image, test_segmap = loader[0]
+    #     test_image = Variable(test_image.unsqueeze(0))
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+
+    val_loader_instance = data_loader(data_path, split='val', is_transform=True, img_size=(args.img_rows, args.img_cols))
+    val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4)
 
     if args.resume:
         if os.path.isfile(args.resume):
@@ -112,14 +116,18 @@ def train(args):
         # GCP storage!
         #if (epoch+1)%2 == 0:
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
-        filename_prefix = args.arch+ '_' + str(args.batch_size)
-        save_checkpoint({
-                    'epoch': epoch + 1,
-                    'arch': args.arch,
-                    'state_dict': model.state_dict(),
-                    #'best_prec1': best_prec1,
-                    'optimizer' : optimizer.state_dict(),
-                }, loss_arr, False, epoch, filename_prefix)
+        if (epoch+1)%validate_every == 0:
+            print("Validation starting on epoch: ", epoch)
+            validate(train_loader, model, n_classes)
+            validate(val_loader, model, n_classes)
+            # filename_prefix = args.arch+ '_' + str(args.batch_size)
+            # save_checkpoint({
+            #             'epoch': epoch + 1,
+            #             'arch': args.arch,
+            #             'state_dict': model.state_dict(),
+            #             #'best_prec1': best_prec1,
+            #             'optimizer' : optimizer.state_dict(),
+            #         }, loss_arr, False, epoch, filename_prefix)
 
 def save_checkpoint(state, loss_arr, is_best, epoch, filename_prefix, max_to_keep=3):
     model_filename_prefix = filename_prefix + '_model_'
@@ -151,6 +159,38 @@ def clean_exceeding_files(filename_prefix, max_to_keep):
         for filename in delete_filenames:
             os.remove(filename)
 
+def validate(val_loader, model, n_classes):
+    # switch to evaluate mode
+    model.eval()
+
+    for i, (images, labels) in tqdm(enumerate(val_loader)):
+        if torch.cuda.is_available():
+            images = Variable(images.cuda(args.cuda_index))
+            labels = Variable(labels.cuda(args.cuda_index))
+        else:
+            images = Variable(images)
+            labels = Variable(labels)
+
+        outputs = model(images)
+        # pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=1)
+        pred = outputs.data.max(1)[1].cpu().numpy()
+        gt = labels.data.cpu().numpy()
+        
+        for gt_, pred_ in zip(gt, pred):
+            gts.append(gt_)
+            preds.append(pred_)
+
+    score, class_iou = scores(gts, preds, n_class=n_classes)
+
+    for k, v in score.items():
+        print k, v
+
+    for i in range(n_classes):
+        print i, class_iou[i]     
+
+    # switch to train mode
+    model.train()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
     parser.add_argument('--arch', nargs='?', type=str, default='fcn8s', 
@@ -174,7 +214,9 @@ if __name__ == '__main__':
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
     parser.add_argument('--cuda_index', default=0, type=int, metavar='N',
-                    help='Specify gpu index')
+                    help='gpu index')
+    parser.add_argument('--validate_every', default=5, type=int, metavar='N',
+                    help='validate every x epochs')
 
     args = parser.parse_args()
     print("Training arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.cuda_index))
