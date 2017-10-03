@@ -227,7 +227,7 @@ class fcn16s(nn.Module):
 # FCN 8s
 class fcn8s(nn.Module):
 
-    def __init__(self, n_classes=21, learned_billinear=False):
+    def __init__(self, n_classes=21, kassem=False, learned_billinear=False):
         super(fcn8s, self).__init__()
         self.learned_billinear = learned_billinear
         self.n_classes = n_classes
@@ -285,6 +285,33 @@ class fcn8s(nn.Module):
         self.score_pool4 = nn.Conv2d(512, self.n_classes, 1)
         self.score_pool3 = nn.Conv2d(256, self.n_classes, 1)
 
+        # Kassem edges addition - start
+        if kassem:
+            self.get_edges = nn.Conv2d(3, 2, 3, padding=1, bias=False)
+            self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+
+            for m in self.modules():
+                if isinstance(m, nn.Conv2d):
+                    #print(m)
+                    kernel_size = m.weight.data.size()
+                    #print(kernel_size)
+                    if kernel_size[0] == 2 and kernel_size[1] == 3:
+                        print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
+                        #print(kernel_size)
+                        #print(m.weight.data)
+                        m.weight.data.numpy()[0,:,:,:] = np.array([
+                            [-1,0,1],
+                            [-2,0,2],
+                            [-1,0,1],                        
+                        ])
+                        m.weight.data.numpy()[1,:,:,:] = np.array([
+                            [-1,-2,-1],
+                            [0,0,0],
+                            [1,2,1],                        
+                        ])
+
+        # Kassem edges addition - end
+
         # TODO: Add support for learned upsampling
         if self.learned_billinear:
             raise NotImplementedError
@@ -306,7 +333,19 @@ class fcn8s(nn.Module):
         score += score_pool4
         score = F.upsample_bilinear(score, score_pool3.size()[2:])
         score += score_pool3
-        out = F.upsample_bilinear(score, x.size()[2:])
+        if not kassem:
+            out = F.upsample_bilinear(score, x.size()[2:])
+
+        # Kassem edges addition - start
+        if kassem:
+            y = self.get_edges(x)
+            y_squared = y*y
+            edges_mag = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:, :, :]) # using 0:1 AND 1: to keepDim = 4
+            edges_dir = torch.atan(y[:, 1:, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
+            edges_cat = torch.cat((edges_mag, edges_dir), 1)
+            edges_conv = self.edges_conv(edges_cat)
+            out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
+        # Kassem edges addition - end
 
         return out
 

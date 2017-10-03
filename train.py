@@ -43,7 +43,7 @@ def train(args):
     #                                  legend=['Loss']))
 
     # Setup Model
-    model = get_model(args.arch, n_classes)
+    model = get_model(args.arch, n_classes, args.kassem)
 
     if torch.cuda.is_available():
         model.cuda(args.cuda_index)
@@ -225,6 +225,9 @@ if __name__ == '__main__':
                     help='gpu index')
     parser.add_argument('--validate_every', default=5, type=int, metavar='N',
                     help='validate every x epochs')
+    parser.add_argument('--kassem', action='store_true', default=False,
+                    help='kassem edges addition')
+
 
     args = parser.parse_args()
     print("Training arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.cuda_index))

@@ -8,11 +8,11 @@ from ptsemseg.models.linknet import *
 
 
 
-def get_model(name, n_classes):
+def get_model(name, n_classes, kassem=False):
     model = _get_model_instance(name)
 
     if name in ['fcn32s', 'fcn16s', 'fcn8s']:
-        model = model(n_classes=n_classes)
+        model = model(n_classes=n_classes, kassem=kassem)
         #vgg16 = models.vgg16(pretrained=True)
         vgg16 = models.vgg16()
         vgg16.load_state_dict( torch.load('/home/nile002u1/data/models/vgg16-397923af.pth') )
