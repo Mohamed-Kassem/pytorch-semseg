@@ -173,7 +173,8 @@ def validate(val_loader, model, n_classes):
     model.eval()
 
     gts, preds = [], []
-    for i, (images, labels) in tqdm(enumerate(val_loader)):
+    # for i, (images, labels) in tqdm(enumerate(val_loader)):
+    for i, (images, labels) in enumerate(val_loader):
         if torch.cuda.is_available():
             images = Variable(images.cuda(args.cuda_index))
             labels = Variable(labels.cuda(args.cuda_index))
