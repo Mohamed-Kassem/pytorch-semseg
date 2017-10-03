@@ -293,9 +293,9 @@ class fcn8s(nn.Module):
 
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
-                    #print(m)
+                    print(m)
                     kernel_size = m.weight.data.size()
-                    #print(kernel_size)
+                    print(kernel_size)
                     if kernel_size[0] == 2 and kernel_size[1] == 3:
                         print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
                         #print(kernel_size)
@@ -310,6 +310,7 @@ class fcn8s(nn.Module):
                             [0,0,0],
                             [1,2,1],                        
                         ])
+            print('Model for loop init finished')
         print('Model init finished')
         # Kassem edges addition - end
 
