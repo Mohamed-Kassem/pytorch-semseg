@@ -305,10 +305,10 @@ class fcn8s(nn.Module):
                         m.weight.data.numpy()[1,:,:,:] = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
                         # print('END NOTE')
             # kassem adding edges- TWO OF THIS
-            self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+            # self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             # kassem concatenating edges- TWO OF THIS
-            # self.out_conv = nn.Conv2d(self.n_classes+2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+            self.out_conv = nn.Conv2d(self.n_classes+2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             # print('Model for loop init finished')
         # print('Model init finished')
@@ -351,14 +351,13 @@ class fcn8s(nn.Module):
             edges_cat = torch.cat((edges_mag, edges_dir), 1)
 
             # kassem adding edges - TWO OF THIS
-            edges_conv = self.edges_conv(edges_cat)
-            out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
+            # edges_conv = self.edges_conv(edges_cat)
+            # out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
 
             # kassem concatenating edges- TWO OF THIS
-            # out_1 = F.upsample_bilinear(score, x.size()[2:])
-            # out_2 = torch.cat( (out_1, edges_cat), 1)
-
-            # out = self.out_conv(out_2)
+            out_1 = F.upsample_bilinear(score, x.size()[2:])
+            out_2 = torch.cat( (out_1, edges_cat), 1)
+            out = self.out_conv(out_2)
 
 
             # print('out')
