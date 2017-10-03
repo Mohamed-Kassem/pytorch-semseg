@@ -86,7 +86,9 @@ def train(args):
                 labels = Variable(labels)
 
             iter = len(train_loader)*epoch + i
-            poly_lr_scheduler(optimizer, args.l_rate, iter, power=0) # power = 0 to disable scheduler 
+            #poly_lr_scheduler(optimizer, args.l_rate, iter, power=0) # power = 0 to disable scheduler 
+            if args.arch == 'segnet':
+                adjust_learning_rate(optimizer, args.l_rate, epoch) # power = 0 to disable scheduler 
             
             optimizer.zero_grad()
             outputs = model(images)
@@ -123,7 +125,7 @@ def train(args):
             print("Validation starting on epoch: ", epoch)
             validate(train_loader, model, n_classes)
             #validate(val_loader, model, n_classes)
-            
+
             # filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(arg.l_rate)
             # save_checkpoint({
             #             'epoch': epoch + 1,
