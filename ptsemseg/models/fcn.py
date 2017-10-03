@@ -341,9 +341,9 @@ class fcn8s(nn.Module):
 
 
             print('get_edges:')
-            print(get_edges.weight.data.shape)
-            print(get_edges.weight[0, 0, 0:3, 0:3])
-            print(get_edges.weight[1, 0, 0:3, 0:3])
+            print(self.get_edges.weight.data.shape)
+            print(self.get_edges.weight[0, 0, 0:3, 0:3])
+            print(self.get_edges.weight[1, 0, 0:3, 0:3])
 
             
             print('x:')
