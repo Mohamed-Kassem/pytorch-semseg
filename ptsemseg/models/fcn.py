@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import numpy as np
+import torch
 # FCN32s
 class fcn32s(nn.Module):
 
