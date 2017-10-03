@@ -29,7 +29,7 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=False)
 
 
     # Setup visdom for visualization
