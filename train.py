@@ -55,7 +55,10 @@ def train(args):
     #     test_image, test_segmap = loader[0]
     #     test_image = Variable(test_image.unsqueeze(0))
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+    if args.kassem:
+        optimizer = torch.optim.SGD(filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters()), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+    else:
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
     val_loader_instance = data_loader(data_path, split='val', is_transform=True, img_size=(args.img_rows, args.img_cols))
     val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4)
