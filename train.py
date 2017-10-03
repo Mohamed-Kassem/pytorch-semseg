@@ -29,7 +29,7 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=False)
 
 
     # Setup visdom for visualization
@@ -128,15 +128,15 @@ def train(args):
             print("Validation starting on epoch: ", epoch)
             validate(train_loader, model, n_classes)
             
-            validate(val_loader, model, n_classes)
-            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(arg.l_rate)
-            save_checkpoint({
-                        'epoch': epoch + 1,
-                        'arch': args.arch,
-                        'state_dict': model.state_dict(),
-                        #'best_prec1': best_prec1,
-                        'optimizer' : optimizer.state_dict(),
-                    }, loss_arr, False, epoch, filename_prefix, 2)
+            # validate(val_loader, model, n_classes)
+            # filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(arg.l_rate)
+            # save_checkpoint({
+            #             'epoch': epoch + 1,
+            #             'arch': args.arch,
+            #             'state_dict': model.state_dict(),
+            #             #'best_prec1': best_prec1,
+            #             'optimizer' : optimizer.state_dict(),
+            #         }, loss_arr, False, epoch, filename_prefix, 2)
 
 def save_checkpoint(state, loss_arr, is_best, epoch, filename_prefix, max_to_keep=3):
     model_filename_prefix = filename_prefix + '_model_'
