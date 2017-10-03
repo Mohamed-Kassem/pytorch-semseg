@@ -129,7 +129,7 @@ def train(args):
             validate(train_loader, model, n_classes)
             
             validate(val_loader, model, n_classes)
-            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_del_' + args.kassem
+            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_del_' + str(args.kassem)
             save_checkpoint({
                         'epoch': epoch + 1,
                         'arch': args.arch,
