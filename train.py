@@ -44,6 +44,8 @@ def train(args):
     # Setup Model
     model = get_model(args.arch, n_classes)
 
+    if torch.cuda.is_available():
+        model.cuda(args.cuda_index)
     # if torch.cuda.is_available():
     #     model.cuda(args.cuda_index)
     #     test_image, test_segmap = loader[0]
