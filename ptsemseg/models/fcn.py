@@ -345,10 +345,17 @@ class fcn8s(nn.Module):
             edges_dir = torch.atan(y[:, 1:, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
             edges_cat = torch.cat((edges_mag, edges_dir), 1)
 
-            edges_conv = self.edges_conv(edges_cat)
-            # print('edges conv')
-            # print(edges_conv[0, 0, 50:53, 50:53])
-            out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
+            # kassem adding edges
+            # edges_conv = self.edges_conv(edges_cat)
+            # out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
+
+            # kassem concatenating edges
+            out_1 = F.upsample_bilinear(score, x.size()[2:])
+            out_2 = torch.cat( (out_1, edges_cat), 1)
+
+            out = out_2
+
+
             # print('out')
             # print(out[0, 0, 50:53, 50:53])
         # Kassem edges addition - end
