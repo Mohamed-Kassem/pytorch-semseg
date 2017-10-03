@@ -231,6 +231,7 @@ class fcn8s(nn.Module):
         super(fcn8s, self).__init__()
         self.learned_billinear = learned_billinear
         self.n_classes = n_classes
+        self.kassem = kassem
 
         self.conv_block1 = nn.Sequential(
             nn.Conv2d(3, 64, 3, padding=100),
@@ -286,7 +287,7 @@ class fcn8s(nn.Module):
         self.score_pool3 = nn.Conv2d(256, self.n_classes, 1)
 
         # Kassem edges addition - start
-        if kassem:
+        if self.kassem:
             self.get_edges = nn.Conv2d(3, 2, 3, padding=1, bias=False)
             self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
@@ -333,11 +334,11 @@ class fcn8s(nn.Module):
         score += score_pool4
         score = F.upsample_bilinear(score, score_pool3.size()[2:])
         score += score_pool3
-        if not kassem:
+        if not self.kassem:
             out = F.upsample_bilinear(score, x.size()[2:])
 
         # Kassem edges addition - start
-        if kassem:
+        if self.kassem:
             y = self.get_edges(x)
             y_squared = y*y
             edges_mag = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:, :, :]) # using 0:1 AND 1: to keepDim = 4
