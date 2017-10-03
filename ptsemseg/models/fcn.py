@@ -333,19 +333,47 @@ class fcn8s(nn.Module):
         score += score_pool3
         if not self.kassem:
             out = F.upsample_bilinear(score, x.size()[2:])
-            print(out[0, :, 50:53, 50:53])
+            print(out[0, 0, 50:53, 50:53])
 
         # Kassem edges addition - start
         if self.kassem:
             y = self.get_edges(x)
+
+            print('x:')
+            print(x.data.shape)
+            print(x.data[0, 0, 0:3, 0:3])
+            print(x.data[0, 1, 0:3, 0:3])
+            print(x.data[0, 2, 0:3, 0:3])
+            print('y0:')
+            print(y.data.shape)
+            print(y.data[0, 0, 0:3, 0:3])
+            print('y1:')
+            print(y.data[0, 1, 0:3, 0:3])
+
+
             y_squared = y*y
             edges_mag = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:, :, :]) # using 0:1 AND 1: to keepDim = 4
             edges_dir = torch.atan(y[:, 1:, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
             edges_cat = torch.cat((edges_mag, edges_dir), 1)
+
+            print('edges_mag:')
+            print(edges_mag.data.shape)
+            print(edges_mag.data[0, 0, 0:3, 0:3])
+            print('edges_dir:')
+            print(edges_dir.data.shape)
+            print(edges_dir.data[0, 0, 0:3, 0:3])
+            print('edges_cat:')
+            print(edges_cat.data.shape)
+            print(edges_cat.data[0, 0, 0:3, 0:3])
+            print(edges_cat.data[0, 1, 0:3, 0:3])
+
+            
             edges_conv = self.edges_conv(edges_cat)
-            print(edges_conv[0, :, 50:53, 50:53])
+            print('edges conv')
+            print(edges_conv[0, 0, 50:53, 50:53])
             out = F.upsample_bilinear(score, x.size()[2:]) + edges_conv
-            print(out[0, :, 50:53, 50:53])
+            print('out')
+            print(out[0, 0, 50:53, 50:53])
         # Kassem edges addition - end
 
         print('Model forward finished')
