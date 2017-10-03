@@ -28,7 +28,7 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
 
 
     # Setup visdom for visualization
@@ -72,10 +72,10 @@ def train(args):
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
 
-    loss_arr = [-1]*len(trainloader)*(args.n_epoch+1)
-    print("Train data size: ", len(trainloader)*args.batch_size)
+    loss_arr = [-1]*len(train_loader)*(args.n_epoch+1)
+    print("Train data size: ", len(train_loader)*args.batch_size)
     for epoch in range(args.start_epoch, args.n_epoch):
-        for i, (images, labels) in enumerate(trainloader):
+        for i, (images, labels) in enumerate(train_loader):
             #print('iteration: {}'.format(i))
             if torch.cuda.is_available():
                 images = Variable(images.cuda(args.cuda_index))
@@ -84,7 +84,7 @@ def train(args):
                 images = Variable(images)
                 labels = Variable(labels)
 
-            iter = len(trainloader)*epoch + i
+            iter = len(train_loader)*epoch + i
             poly_lr_scheduler(optimizer, args.l_rate, iter, power=0) # power = 0 to disable scheduler 
             
             optimizer.zero_grad()
@@ -105,7 +105,7 @@ def train(args):
             if (i+1) % 20 == 0:
                 #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
                 end = time.time()
-                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i, len(trainloader), loss.data[0], end-start))
+                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i, len(train_loader), loss.data[0], end-start))
                 start = time.time()
 
         # test_output = model(test_image)
