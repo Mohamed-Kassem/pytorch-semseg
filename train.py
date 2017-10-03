@@ -44,6 +44,7 @@ def train(args):
 
     # Setup Model
     model = get_model(args.arch, n_classes, args.kassem)
+    print('Model is setupped correctly')
 
     if torch.cuda.is_available():
         model.cuda(args.cuda_index)
