@@ -5,11 +5,12 @@
 #SBATCH --gres=gpu:2
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
-#SBATCH --nodelist=comp003
 #SBATCH --cpus-per-task=1
 #SBATCH --time=256:00:00
 #SBATCH --output=%j-tmp.out
 #output=batch_size_1_fcn_segnet.out
+
+#BATCH --nodelist=comp003
 
 #python just_import.py
 #python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1
