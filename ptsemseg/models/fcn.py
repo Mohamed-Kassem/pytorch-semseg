@@ -305,7 +305,7 @@ class fcn8s(nn.Module):
             #             m.weight.data.numpy()[0,:,:,:] = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
             #             m.weight.data.numpy()[1,:,:,:] = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
             if self.exp_index == 0:
-                self.get_edges = nn.Conv2d(3, 4, 5, padding=3, bias=False)
+                self.get_edges = nn.Conv2d(3, 4, 5, padding=2, bias=False)
 
                 for m in self.modules():
                     if isinstance(m, nn.Conv2d):
@@ -341,7 +341,7 @@ class fcn8s(nn.Module):
                                 [-2/5,-1/2,0,1/2,2/5],
                                 [-2/8,-1/5,0,1/5,2/8]]).T
             elif self.exp_index == 1:
-                self.get_edges = nn.Conv2d(3, 6, 7, padding=5, bias=False)
+                self.get_edges = nn.Conv2d(3, 6, 7, padding=3, bias=False)
 
                 for m in self.modules():
                     if isinstance(m, nn.Conv2d):
