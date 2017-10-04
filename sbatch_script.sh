@@ -5,6 +5,7 @@
 #SBATCH --gres=gpu:2
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
+#SBATCH --nodelist=1-16
 #SBATCH --cpus-per-task=1
 #SBATCH --time=256:00:00
 #SBATCH --output=%j-tmp.out
