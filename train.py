@@ -43,10 +43,10 @@ def train(args):
     #                                  legend=['Loss']))
 
     # Setup Model
-    model = get_model(args.arch, n_classes, args.kassem)
+    model = get_model(args.arch, n_classes, args.kassem, args.exp_index)
 
     if torch.cuda.is_available():
-        model.cuda(args.cuda_index)
+        model.cuda(0)
     # if torch.cuda.is_available():
     #     model.cuda(args.cuda_index)
     #     test_image, test_segmap = loader[0]
@@ -82,8 +82,8 @@ def train(args):
         for i, (images, labels) in enumerate(train_loader):
             #print('iteration: {}'.format(i))
             if torch.cuda.is_available():
-                images = Variable(images.cuda(args.cuda_index))
-                labels = Variable(labels.cuda(args.cuda_index))
+                images = Variable(images.cuda(0))
+                labels = Variable(labels.cuda(0))
             else:
                 images = Variable(images)
                 labels = Variable(labels)
@@ -176,8 +176,8 @@ def validate(val_loader, model, n_classes):
     # for i, (images, labels) in tqdm(enumerate(val_loader)):
     for i, (images, labels) in enumerate(val_loader):
         if torch.cuda.is_available():
-            images = Variable(images.cuda(args.cuda_index))
-            labels = Variable(labels.cuda(args.cuda_index))
+            images = Variable(images.cuda(0))
+            labels = Variable(labels.cuda(0))
         else:
             images = Variable(images)
             labels = Variable(labels)
@@ -225,7 +225,7 @@ if __name__ == '__main__':
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-    parser.add_argument('--cuda_index', default=0, type=int, metavar='N',
+    parser.add_argument('--exp_index', default=0, type=int, metavar='N',
                     help='gpu index')
     parser.add_argument('--validate_every', default=5, type=int, metavar='N',
                     help='validate every x epochs')
@@ -234,5 +234,5 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
-    print("Training arch {} dataset {} batchsize {} size {}x{} cuda index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.cuda_index))
+    print("Training arch {} dataset {} batchsize {} size {}x{} exp index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.exp_index))
     train(args)
