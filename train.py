@@ -29,7 +29,7 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True, pin_memory=False)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True, pin_memory=True)
 
 
     # Setup visdom for visualization
@@ -70,7 +70,7 @@ def train(args):
         optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
     val_loader_instance = data_loader(data_path, split='val', is_transform=True, img_size=(args.img_rows, args.img_cols))
-    val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4, pin_memory=False)
+    val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4, pin_memory=True)
 
     if args.resume:
         if os.path.isfile(args.resume):
