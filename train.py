@@ -56,7 +56,16 @@ def train(args):
     #     test_image = Variable(test_image.unsqueeze(0))
 
     if args.kassem:
-        optimizer = torch.optim.SGD(filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters()), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+        if args.exp_index == 0:
+            print("Length before filtering: ", len(model.parameters()))
+            filtered_params = filter(lambda p: not(p.size()[0] == 4 and p.size()[1] == 3 and p.size()[2] == 5 and p.size()[3] == 5), model.parameters())
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+            print("Length after filtering: ", len(filtered_params))
+        elif args.exp_index == 1:
+            print("Length before filtering: ", len(model.parameters()))
+            filtered_params = filter(lambda p: not(p.size()[0] == 6 and p.size()[1] == 3 and p.size()[2] == 7 and p.size()[3] == 7), model.parameters())
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+            print("Length after filtering: ", len(filtered_params))
     else:
         optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
@@ -129,7 +138,7 @@ def train(args):
             #validate(train_loader, model, n_classes)
             
             validate(val_loader, model, n_classes)
-            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.kassem)
+            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.exp_index)
             save_checkpoint({
                         'epoch': epoch + 1,
                         'arch': args.arch,
