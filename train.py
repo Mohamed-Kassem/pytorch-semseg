@@ -137,8 +137,8 @@ def train(args):
             print("Validation starting on epoch: ", epoch)
             validate(train_loader, model, n_classes)
             
-            # validate(val_loader, model, n_classes)
-            filename_prefix = str(args.job_id) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.exp_index)
+            validate(val_loader, model, n_classes)
+            filename_prefix = str(args.job_id) + '_' + str(args.exp_index) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_'
             save_checkpoint({
                         'epoch': epoch + 1,
                         'arch': args.arch,
