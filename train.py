@@ -135,9 +135,9 @@ def train(args):
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
         if (epoch+1)%args.validate_every == 0:
             print("Validation starting on epoch: ", epoch)
-            #validate(train_loader, model, n_classes)
+            validate(train_loader, model, n_classes)
             
-            validate(val_loader, model, n_classes)
+            # validate(val_loader, model, n_classes)
             filename_prefix = str(args.job_id) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.exp_index)
             save_checkpoint({
                         'epoch': epoch + 1,

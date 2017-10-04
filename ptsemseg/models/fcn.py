@@ -407,7 +407,7 @@ class fcn8s(nn.Module):
             # kassem concatenating edges- THREE OF THIS'
             if self.exp_index == 0:
                 self.out_conv = nn.Conv2d(self.n_classes+4, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
-            elif self.exp_index == 0:
+            elif self.exp_index == 1:
                 self.out_conv = nn.Conv2d(self.n_classes+6, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             # print('Model for loop init finished')
