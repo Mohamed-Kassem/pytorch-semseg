@@ -138,7 +138,7 @@ def train(args):
             #validate(train_loader, model, n_classes)
             
             validate(val_loader, model, n_classes)
-            filename_prefix = args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.exp_index)
+            filename_prefix = str(args.job_id) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_' + str(args.exp_index)
             save_checkpoint({
                         'epoch': epoch + 1,
                         'arch': args.arch,
@@ -240,6 +240,8 @@ if __name__ == '__main__':
                     help='validate every x epochs')
     parser.add_argument('--kassem', action='store_true', default=False,
                     help='kassem edges addition')
+    parser.add_argument('--job_id', default=5, type=int, metavar='N',
+                    help='slurm job id for checkpoints identification')
 
 
     args = parser.parse_args()
