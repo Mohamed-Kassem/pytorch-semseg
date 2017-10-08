@@ -58,21 +58,21 @@ def train(args):
     if args.kassem:
         if args.exp_index == 0:
             print("Length before filtering: ", len(list(model.parameters())) )
+            
             # sobel 5x5
             filtered_params = filter(lambda p: not(p.size()[0] == 4 and p.size()[1] == 3 and p.size()[2] == 5 and p.size()[3] == 5), model.parameters())
-
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
 
-            # optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
             print("Length after filtering: ", len(list(filtered_params)) )
         elif args.exp_index == 1:
             print("Length before filtering: ", len(list(model.parameters())) )
             # sobel 7x7
             filtered_params = filter(lambda p: not(p.size()[0] == 6 and p.size()[1] == 3 and p.size()[2] == 7 and p.size()[3] == 7), model.parameters())
-            
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
+
             optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
             print("Length after filtering: ", len(list(filtered_params)) )
     else:
