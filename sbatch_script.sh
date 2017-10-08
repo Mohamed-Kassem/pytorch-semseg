@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=256:00:00
 #SBATCH --output=/dev/null
-#SBATCH --error=%j-tmp.out
+#SBATCH --error=/dev/null
 #output=batch_size_1_fcn_segnet.out
 
 #BATCH --nodelist=comp003
