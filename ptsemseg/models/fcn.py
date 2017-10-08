@@ -292,124 +292,125 @@ class fcn8s(nn.Module):
         # Kassem edges addition - start
         if self.kassem:
             
-            self.get_edges = nn.Conv2d(3, 2, 3, padding=1, bias=False)
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    # print(m)
-                    kernel_size = m.weight.data.size()
-                    # print(kernel_size)
-                    if kernel_size[0] == 2 and kernel_size[1] == 3:
-                        print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
-                        #print(kernel_size)
-                        #print(m.weight.data)
-                        m.weight.data.numpy()[0,:,:,:] = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
-                        m.weight.data.numpy()[1,:,:,:] = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
-            # if self.exp_index == 0:
-            #     self.get_edges = nn.Conv2d(3, 4, 5, padding=2, bias=False)
+            # self.get_edges = nn.Conv2d(3, 2, 3, padding=1, bias=False)
+            # for m in self.modules():
+            #     if isinstance(m, nn.Conv2d):
+            #         # print(m)
+            #         kernel_size = m.weight.data.size()
+            #         # print(kernel_size)
+            #         if kernel_size[0] == 2 and kernel_size[1] == 3:
+            #             print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
+            #             #print(kernel_size)
+            #             #print(m.weight.data)
+            #             m.weight.data.numpy()[0,:,:,:] = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
+            #             m.weight.data.numpy()[1,:,:,:] = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
+                        
+            if self.exp_index == 0:
+                self.get_edges = nn.Conv2d(3, 4, 5, padding=2, bias=False)
 
-            #     for m in self.modules():
-            #         if isinstance(m, nn.Conv2d):
-            #             # print(m)
-            #             kernel_size = m.weight.data.size()
-            #             # print(kernel_size)
-            #             if kernel_size[0] == 4 and kernel_size[1] == 3:
-            #                 print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
-            #                 #print(kernel_size)
-            #                 #print(m.weight.data)
-            #                 m.weight.data.numpy()[0,:,:,:] = np.array([
-            #                     [0,0,0,0,0],
-            #                     [0,-1,0,1,0],
-            #                     [0,-2,0,2,0],
-            #                     [0,-1,0,1,0],
-            #                     [0,0,0,0,0]]) / 2
-            #                 m.weight.data.numpy()[1,:,:,:] = np.array([
-            #                     [0,0,0,0,0],
-            #                     [0,-1,0,1,0],
-            #                     [0,-2,0,2,0],
-            #                     [0,-1,0,1,0],
-            #                     [0,0,0,0,0]]).T / 2
-            #                 m.weight.data.numpy()[2,:,:,:] = np.array([
-            #                     [-2/8,-1/5,0,1/5,2/8],
-            #                     [-2/5,-1/2,0,1/2,2/5],
-            #                     [-2/4,-1/1,0,1/1,2/4],
-            #                     [-2/5,-1/2,0,1/2,2/5],
-            #                     [-2/8,-1/5,0,1/5,2/8]])
-            #                 m.weight.data.numpy()[3,:,:,:] = np.array([
-            #                     [-2/8,-1/5,0,1/5,2/8],
-            #                     [-2/5,-1/2,0,1/2,2/5],
-            #                     [-2/4,-1/1,0,1/1,2/4],
-            #                     [-2/5,-1/2,0,1/2,2/5],
-            #                     [-2/8,-1/5,0,1/5,2/8]]).T
-            # elif self.exp_index == 1:
-            #     self.get_edges = nn.Conv2d(3, 6, 7, padding=3, bias=False)
+                for m in self.modules():
+                    if isinstance(m, nn.Conv2d):
+                        # print(m)
+                        kernel_size = m.weight.data.size()
+                        # print(kernel_size)
+                        if kernel_size[0] == 4 and kernel_size[1] == 3:
+                            print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
+                            #print(kernel_size)
+                            #print(m.weight.data)
+                            m.weight.data.numpy()[0,:,:,:] = np.array([
+                                [0,0,0,0,0],
+                                [0,-1,0,1,0],
+                                [0,-2,0,2,0],
+                                [0,-1,0,1,0],
+                                [0,0,0,0,0]]) / 2
+                            m.weight.data.numpy()[1,:,:,:] = np.array([
+                                [0,0,0,0,0],
+                                [0,-1,0,1,0],
+                                [0,-2,0,2,0],
+                                [0,-1,0,1,0],
+                                [0,0,0,0,0]]).T / 2
+                            m.weight.data.numpy()[2,:,:,:] = np.array([
+                                [-2/8,-1/5,0,1/5,2/8],
+                                [-2/5,-1/2,0,1/2,2/5],
+                                [-2/4,-1/1,0,1/1,2/4],
+                                [-2/5,-1/2,0,1/2,2/5],
+                                [-2/8,-1/5,0,1/5,2/8]])
+                            m.weight.data.numpy()[3,:,:,:] = np.array([
+                                [-2/8,-1/5,0,1/5,2/8],
+                                [-2/5,-1/2,0,1/2,2/5],
+                                [-2/4,-1/1,0,1/1,2/4],
+                                [-2/5,-1/2,0,1/2,2/5],
+                                [-2/8,-1/5,0,1/5,2/8]]).T
+            elif self.exp_index == 1:
+                self.get_edges = nn.Conv2d(3, 6, 7, padding=3, bias=False)
 
-            #     for m in self.modules():
-            #         if isinstance(m, nn.Conv2d):
-            #             # print(m)
-            #             kernel_size = m.weight.data.size()
-            #             # print(kernel_size)
-            #             if kernel_size[0] == 6 and kernel_size[1] == 3:
-            #                 print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
-            #                 #print(kernel_size)
-            #                 #print(m.weight.data)
-            #                 m.weight.data.numpy()[0,:,:,:] = np.array([
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,-1,0,1,0,0],
-            #                     [0,0,-2,0,2,0,0],
-            #                     [0,0,-1,0,1,0,0],
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,0,0,0,0,0]]) / 2
-            #                 m.weight.data.numpy()[1,:,:,:] = np.array([
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,-1,0,1,0,0],
-            #                     [0,0,-2,0,2,0,0],
-            #                     [0,0,-1,0,1,0,0],
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,0,0,0,0,0,0]]).T / 2
-            #                 m.weight.data.numpy()[2,:,:,:] = np.array([
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,-2/8,-1/5,0,1/5,2/8,0],
-            #                     [0,-2/5,-1/2,0,1/2,2/5,0],
-            #                     [0,-2/4,-1/1,0,1/1,2/4,0],
-            #                     [0,-2/5,-1/2,0,1/2,2/5,0],
-            #                     [0,-2/8,-1/5,0,1/5,2/8,0],
-            #                     [0,0,0,0,0,0,0]])
-            #                 m.weight.data.numpy()[3,:,:,:] = np.array([
-            #                     [0,0,0,0,0,0,0],
-            #                     [0,-1,-2,0,2,1,0],
-            #                     [0,-4,-8,0,8,4,0],
-            #                     [0,-6,-12,0,12,6,0],
-            #                     [0,-4,-8,0,8,4,0],
-            #                     [0,-1,-2,0,2,1,0],
-            #                     [0,0,0,0,0,0,0]]).T
-            #                 m.weight.data.numpy()[4,:,:,:] = np.array([
-            #                     [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18],
-            #                     [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
-            #                     [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
-            #                     [-3/9 , -2/4 , -1/1 , 0,  1/1 , 2/4 , 3/9 ],
-            #                     [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
-            #                     [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
-            #                     [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18]])
-            #                 m.weight.data.numpy()[5,:,:,:] = np.array([
-            #                     [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18],
-            #                     [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
-            #                     [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
-            #                     [-3/9 , -2/4 , -1/1 , 0,  1/1 , 2/4 , 3/9 ],
-            #                     [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
-            #                     [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
-            #                     [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18]]).T
+                for m in self.modules():
+                    if isinstance(m, nn.Conv2d):
+                        # print(m)
+                        kernel_size = m.weight.data.size()
+                        # print(kernel_size)
+                        if kernel_size[0] == 6 and kernel_size[1] == 3:
+                            print('NOTE THAT THIS SHOULD BE PRINTED ONCE')
+                            #print(kernel_size)
+                            #print(m.weight.data)
+                            m.weight.data.numpy()[0,:,:,:] = np.array([
+                                [0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0],
+                                [0,0,-1,0,1,0,0],
+                                [0,0,-2,0,2,0,0],
+                                [0,0,-1,0,1,0,0],
+                                [0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0]]) / 2
+                            m.weight.data.numpy()[1,:,:,:] = np.array([
+                                [0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0],
+                                [0,0,-1,0,1,0,0],
+                                [0,0,-2,0,2,0,0],
+                                [0,0,-1,0,1,0,0],
+                                [0,0,0,0,0,0,0],
+                                [0,0,0,0,0,0,0]]).T / 2
+                            m.weight.data.numpy()[2,:,:,:] = np.array([
+                                [0,0,0,0,0,0,0],
+                                [0,-2/8,-1/5,0,1/5,2/8,0],
+                                [0,-2/5,-1/2,0,1/2,2/5,0],
+                                [0,-2/4,-1/1,0,1/1,2/4,0],
+                                [0,-2/5,-1/2,0,1/2,2/5,0],
+                                [0,-2/8,-1/5,0,1/5,2/8,0],
+                                [0,0,0,0,0,0,0]])
+                            m.weight.data.numpy()[3,:,:,:] = np.array([
+                                [0,0,0,0,0,0,0],
+                                [0,-1,-2,0,2,1,0],
+                                [0,-4,-8,0,8,4,0],
+                                [0,-6,-12,0,12,6,0],
+                                [0,-4,-8,0,8,4,0],
+                                [0,-1,-2,0,2,1,0],
+                                [0,0,0,0,0,0,0]]).T
+                            m.weight.data.numpy()[4,:,:,:] = np.array([
+                                [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18],
+                                [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
+                                [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
+                                [-3/9 , -2/4 , -1/1 , 0,  1/1 , 2/4 , 3/9 ],
+                                [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
+                                [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
+                                [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18]])
+                            m.weight.data.numpy()[5,:,:,:] = np.array([
+                                [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18],
+                                [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
+                                [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
+                                [-3/9 , -2/4 , -1/1 , 0,  1/1 , 2/4 , 3/9 ],
+                                [-3/10, -2/5 , -1/2 , 0,  1/2 , 2/5 , 3/10],
+                                [-3/13, -2/8 , -1/5 , 0,  1/5 , 2/8 , 3/13],
+                                [-3/18, -2/13, -1/10, 0,  1/10, 2/13, 3/18]]).T
 
             # kassem adding edges- THREE OF THIS
             # self.edges_conv = nn.Conv2d(2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             # kassem concatenating edges- THREE OF THIS'
-            self.out_conv = nn.Conv2d(self.n_classes+2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
-            # if self.exp_index == 0:
-            #     self.out_conv = nn.Conv2d(self.n_classes+4, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
-            # elif self.exp_index == 1:
-            #     self.out_conv = nn.Conv2d(self.n_classes+6, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+            # self.out_conv = nn.Conv2d(self.n_classes+2, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+            if self.exp_index == 0:
+                self.out_conv = nn.Conv2d(self.n_classes+4, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
+            elif self.exp_index == 1:
+                self.out_conv = nn.Conv2d(self.n_classes+6, self.n_classes, 3, padding=1, bias=True) # 10 should be classes num
 
             # print('Model for loop init finished')
         # print('Model init finished')
@@ -446,25 +447,25 @@ class fcn8s(nn.Module):
         if self.kassem:
             y = self.get_edges(x)
             y_squared = y*y
-            edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
-            edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
-            edges_cat = torch.cat((edges_mag_1, edges_dir_1), 1)
+            # edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
+            # edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
+            # edges_cat = torch.cat((edges_mag_1, edges_dir_1), 1)
             
-            # if self.exp_index == 0:
-            #     edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
-            #     edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
-            #     edges_mag_2 = torch.sqrt(y_squared[:, 2:3, :, :] + y_squared[:, 3:4, :, :])
-            #     edges_dir_2 = torch.atan(y[:, 3:4, :, :]/ (y[:, 1:2, :, :] + 1e-5 ) )
-            #     edges_cat = torch.cat((edges_mag_1, edges_dir_1, edges_mag_2, edges_dir_2), 1)
+            if self.exp_index == 0:
+                edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
+                edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
+                edges_mag_2 = torch.sqrt(y_squared[:, 2:3, :, :] + y_squared[:, 3:4, :, :])
+                edges_dir_2 = torch.atan(y[:, 3:4, :, :]/ (y[:, 1:2, :, :] + 1e-5 ) )
+                edges_cat = torch.cat((edges_mag_1, edges_dir_1, edges_mag_2, edges_dir_2), 1)
 
-            # elif self.exp_index == 1:
-            #     edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
-            #     edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
-            #     edges_mag_2 = torch.sqrt(y_squared[:, 2:3, :, :] + y_squared[:, 3:4, :, :])
-            #     edges_dir_2 = torch.atan(y[:, 3:4, :, :]/ (y[:, 1:2, :, :] + 1e-5 ) )
-            #     edges_mag_3 = torch.sqrt(y_squared[:, 4:5, :, :] + y_squared[:, 5:6, :, :])
-            #     edges_dir_3 = torch.atan(y[:, 5:6, :, :]/ (y[:, 4:5, :, :] + 1e-5 ) )
-            #     edges_cat = torch.cat((edges_mag_1, edges_dir_1, edges_mag_2, edges_dir_2, edges_mag_3, edges_dir_3), 1)
+            elif self.exp_index == 1:
+                edges_mag_1 = torch.sqrt(y_squared[:, 0:1, :, :] + y_squared[:, 1:2, :, :]) # using 0:1 AND 1: to keepDim = 4
+                edges_dir_1 = torch.atan(y[:, 1:2, :, :]/ (y[:, 0:1, :, :] + 1e-5 ) )
+                edges_mag_2 = torch.sqrt(y_squared[:, 2:3, :, :] + y_squared[:, 3:4, :, :])
+                edges_dir_2 = torch.atan(y[:, 3:4, :, :]/ (y[:, 1:2, :, :] + 1e-5 ) )
+                edges_mag_3 = torch.sqrt(y_squared[:, 4:5, :, :] + y_squared[:, 5:6, :, :])
+                edges_dir_3 = torch.atan(y[:, 5:6, :, :]/ (y[:, 4:5, :, :] + 1e-5 ) )
+                edges_cat = torch.cat((edges_mag_1, edges_dir_1, edges_mag_2, edges_dir_2, edges_mag_3, edges_dir_3), 1)
 
             # kassem adding edges - THREE OF THIS
             # edges_conv = self.edges_conv(edges_cat)

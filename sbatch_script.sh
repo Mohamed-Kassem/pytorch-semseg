@@ -33,11 +33,11 @@ then
     echo "********** $1 **********"
     BATCH_SIZE=1
     export CUDA_VISIBLE_DEVICES=0
-    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --exp_index 0 --validate_every 5 --job_id ${SLURM_JOB_ID} --resume fcn8s_1_1e-05_concat_False_model_9.pth.tar > "${SLURM_JOB_ID}_0_batch_size_${BATCH_SIZE}_fcn8s.out" 2>&1 &
+    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --kassem --exp_index 0 --validate_every 5 --job_id ${SLURM_JOB_ID} > "${SLURM_JOB_ID}_0.out" 2>&1 &
     # python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size ${BATCH_SIZE} --cuda_index 0 --l_rate 1e-4 > "${SLURM_JOB_ID}_lr1e-4_batch_size_${BATCH_SIZE}_segnet.out" 2>&1 &
 
     export CUDA_VISIBLE_DEVICES=1
-    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --exp_index 1 --validate_every 5 --kassem --job_id ${SLURM_JOB_ID} --resume fcn8s_1_1e-05_concat_True_model_9.pth.tar > "${SLURM_JOB_ID}_1_batch_size_${BATCH_SIZE}_fcn8s.out" 2>&1 &
+    python train.py --arch fcn8s --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --kassem --exp_index 1 --validate_every 5 --job_id ${SLURM_JOB_ID} > "${SLURM_JOB_ID}_1.out" 2>&1 &
     # python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size ${BATCH_SIZE} --cuda_index 0 --l_rate 1e-3 > "${SLURM_JOB_ID}_lr1e-3_batch_size_${BATCH_SIZE}_segnet.out" 2>&1 &
 else
     echo "$1 is unrecognized input"

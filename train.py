@@ -59,7 +59,7 @@ def train(args):
         if args.exp_index == 0:
             print("Length before filtering: ", len(list(model.parameters())) )
             # sobel 5x5
-            # filtered_params = filter(lambda p: not(p.size()[0] == 4 and p.size()[1] == 3 and p.size()[2] == 5 and p.size()[3] == 5), model.parameters())
+            filtered_params = filter(lambda p: not(p.size()[0] == 4 and p.size()[1] == 3 and p.size()[2] == 5 and p.size()[3] == 5), model.parameters())
 
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
@@ -69,10 +69,10 @@ def train(args):
         elif args.exp_index == 1:
             print("Length before filtering: ", len(list(model.parameters())) )
             # sobel 7x7
-            # filtered_params = filter(lambda p: not(p.size()[0] == 6 and p.size()[1] == 3 and p.size()[2] == 7 and p.size()[3] == 7), model.parameters())
+            filtered_params = filter(lambda p: not(p.size()[0] == 6 and p.size()[1] == 3 and p.size()[2] == 7 and p.size()[3] == 7), model.parameters())
             
             # sobel 3x3
-            filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
+            # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
             optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
             print("Length after filtering: ", len(list(filtered_params)) )
     else:
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     parser.add_argument('--validate_every', default=5, type=int, metavar='N',
                     help='validate every x epochs')
     parser.add_argument('--kassem', action='store_true', default=False,
-                    help='kassem edges addition')
+                    help='kassem edges contribution')
     parser.add_argument('--job_id', default=5, type=int, metavar='N',
                     help='slurm job id for checkpoints identification')
 
