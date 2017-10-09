@@ -29,8 +29,11 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True, pin_memory=True)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle= not args.no_shuffle, pin_memory=True)
 
+    if args.overfit:
+        train_loader.dataset.train_data = train_loader.dataset.train_data[:4*1, :, :]
+        train_loader.dataset.train_labels = train_loader.dataset.train_labels[:4*1]
 
     # Setup visdom for visualization
     # vis = visdom.Visdom()
@@ -64,7 +67,7 @@ def train(args):
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
 
-            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
             print("Length after filtering: ", len(list(filtered_params)) )
         elif args.exp_index == 1:
             print("Length before filtering: ", len(list(model.parameters())) )
@@ -73,13 +76,17 @@ def train(args):
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
 
-            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
             print("Length after filtering: ", len(list(filtered_params)) )
     else:
-        optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
 
     val_loader_instance = data_loader(data_path, split='val', is_transform=True, img_size=(args.img_rows, args.img_cols))
     val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4, pin_memory=True)
+
+    if args.overfit:
+        val_loader.dataset.train_data = train_loader.dataset.train_data[:4*1, :, :]
+        val_loader.dataset.train_labels = train_loader.dataset.train_labels[:4*1]
 
     if args.resume:
         if os.path.isfile(args.resume):
@@ -126,7 +133,7 @@ def train(args):
             #     update='append')
 
             loss_arr[i] = loss.data[0]
-            if (i+1) % 20 == 0:
+            if (i+1) % 1 == 0:
                 #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
                 end = time.time()
                 print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i, len(train_loader), loss.data[0], end-start))
@@ -142,10 +149,13 @@ def train(args):
         # GCP storage!
         #if (epoch+1)%2 == 0:
             #torch.save(model, "{}_{}_{}_{}.pkl".format(args.arch, args.dataset, args.feature_scale, epoch))
-        if (epoch+1)%args.validate_every == 0:
-            print("Validation starting on epoch: ", epoch)
+        if args.overfit:
+            print("Validation starting on epoch: ", epoch+1)
             validate(train_loader, model, n_classes)
             
+        if (epoch+1)%args.validate_every == 0 and not args.overfit:
+            print("Validation starting on epoch: ", epoch+1)
+            validate(train_loader, model, n_classes)
             validate(val_loader, model, n_classes)
             filename_prefix = str(args.job_id) + '_' + str(args.exp_index) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_'
             save_checkpoint({
@@ -243,16 +253,29 @@ if __name__ == '__main__':
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-    parser.add_argument('--exp_index', default=0, type=int, metavar='N',
-                    help='gpu index')
     parser.add_argument('--validate_every', default=5, type=int, metavar='N',
                     help='validate every x epochs')
+    parser.add_argument('--overfit', action='store_true', default=False,
+                        help='overfit on small data')
+    parser.add_argument('--no_shuffle', action='store_true', default=False,
+                        help='Shuffle data during training')
+
     parser.add_argument('--kassem', action='store_true', default=False,
                     help='kassem edges contribution')
-    parser.add_argument('--job_id', default=5, type=int, metavar='N',
+
+    parser.add_argument('--exp_index', default=0, type=int, metavar='N',
+                    help='gpu index')
+    parser.add_argument('--job_id', type=int, metavar='N',
                     help='slurm job id for checkpoints identification')
 
-
     args = parser.parse_args()
-    print("Training arch {} dataset {} batchsize {} size {}x{} exp index {}".format(args.arch, args.dataset, args.batch_size, args.img_rows, args.img_cols, args.exp_index))
+
+    if args.overfit:
+        args.weight_decay = 0
+    else:
+        args.weight_decay = 5e-4
+
+    for arg in vars(args):
+        print(arg, getattr(args, arg))
+    exit()
     train(args)
