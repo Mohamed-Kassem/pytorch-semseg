@@ -42,7 +42,7 @@ then
     python train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 256 --img_cols 256 --batch_size 1 --l_rate 1.58489319e-04 --overfit --kassem --exp_index 1 --validate_every 5 --job_id ${SLURM_JOB_ID} > "${SLURM_JOB_ID}_1.out" 2>&1 &
 
 else
-    echo "$1 is unrecognized input"
+    echo "$1 is unrecognized input" > "err.out"
 fi
 
 
