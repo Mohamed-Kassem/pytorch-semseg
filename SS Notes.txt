@@ -1,0 +1,105 @@
+preencoded bug in pascal if folder len != segmentation class len?
+
+TODO
+    reproduce results:
+        FCN8s 62.2 IU
+        https://github.com/meetshah1995/pytorch-semseg/issues/7 : It takes me 9 hours for FCN8s to train on Pascal VOC [mIoU ~ 62].
+
+    normalize edges magnitude/ direction?
+    very large filters (maybe 64x64) and num filters may be 32, in VGG from 128 to 256 filters layer num parameters 3*3*128*256=294912, here it is 64*64*2*32=262144
+        TA DA DA, make it 64*64*3*32=393216 to capture the silhouette in the conv
+        TA DA DA #2, make it recurrent the 3 channels have 2 channels magnitude and direction which are fixed and the 3rd channel which is the semantic segmentation output is changed from layer to layer
+            karim said that taking the output predictions after training the first time would overfit (because in the second phase of training you would get activations which is most likely similar to the ground truth which will not be the case with the validation/ test data!)
+
+    code to understand later:
+
+I changed this file
+    /home/samy/.virtualenvs/keras_tf/local/lib/python2.7/site-packages/visdom/__init__.py
+        lines 437 441 are commented by me
+
+pascal val size 1449
+
+This dataset is split into a training set, a validation set and a test set, with 1464, 1449 (train+val=trainval are 2193) and 1456 images each. Since the test set labels are not publicly available, all reported results have been obtained from the VOC evaluation server.
+
+why fcn slower than segnet
+
+BUG why segnet validation accuracy is enhancing very slowly
+    overfit on small data
+
+BUG batch size greater than one implementation
+
+test your idea on fcn if fcn is 80% working
+    LoG?
+
+submitted
+
+    127475
+        fcn8s batch 1 + kassem 3x3 concat edges
+
+    127555 kassem edges concat 5x5 + concat 7x7
+        exp_index 0 freeze layer with depth 4
+        exp_index 1 freeze layer with depth 6
+
+        [ 1.00000000e-03,   1.58489319e-04,   2.51188643e-05, 3.98107171e-06,   6.30957344e-07,   1.00000000e-07    ]
+
+canceled/ suspended
+    127034 fcn8s batch 32
+       6:0.1303 
+       11:0.2182 
+       15:0.3001 
+       21: 0.3234 
+       36: 0.45281 
+       47: 0.4765 
+       67: 0.5012
+       outcome: I guess there is a bug in batch size larger than one
+       data: 127034_output for models - loss_dir for losses
+
+    127207 fcn8s + kassem 3x3 concat edges
+        outcome: validation accuracy on concat is larger, however was just the 10th epoch
+        data: fcn8s_1_1e-05_concat_*
+        
+    127208 fcn8s + kassem add edges
+        outcome: validation accuracy on addition is smaller, however was just the 10th epoch
+        data: fcn8s_1_1e-05_add_*
+
+
+finished
+    127163 1e-3 annealing
+    127165 1e-2 1e-1 annealing
+    127166 1e-4 1e-3 annealing
+        conclusions 1e-1 1e-2 segnet does not learn actually last epochs losses don
+        I guess there is a bug with segnet, even overfit test fails
+
+    127192 overfit test fcn8s + kassem adding edges
+        results are worse
+    127198 overfit test fcn8s + kassem concat edges
+        final epoch is better by 2%, however the results are still improving as it is an overfitting test
+
+things to remember:
+    contribution
+        trainable FALSE
+
+    local - cloud changes:
+        // "data_path": "/home/nile002u1/data/VOCdevkit/VOC2012"
+        // "data_path": "/home/nile002u1/data/benchmark_RELEASE/"
+        // models/__init__.py VGG16 in FCN/ SegNet
+        // pin memory true/ false
+
+    to submit/ do:
+        multiply
+        train accuracy efficient
+
+
+['2007_000032', '2007_000039', '2007_000063', '2007_000068', '2007_000121', '2007_000170', '2007_000241', '2007_000243', '2007_000250', '2007_000256', '2007_000333', '2007_000363', '2007_000364', '2007_000392', '2007_000480', '2007_000504', '2007_000515', '2007_000528', '2007_000549', '2007_000584', '2007_000645', '2007_000648', '2007_000713', '2007_000720', '2007_000733']
+
+segnet:
+    adam?
+    overfit
+    batches
+    loss
+
+    lr 1e-1 5.out
+
+    python  train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 64 --img_cols 64 --batch_size 1 --l_rate 1e-1 --overfit --exp_index 0 --validate_every 5
+
+mai.gamal@nu.edu.eg
