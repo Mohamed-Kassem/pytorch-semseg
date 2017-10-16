@@ -101,5 +101,3 @@ segnet:
     lr 1e-1 5.out
 
     python  train.py --arch segnet --dataset pascal --n_epoch 150 --img_rows 64 --img_cols 64 --batch_size 1 --l_rate 1e-1 --overfit --exp_index 0 --validate_every 5
-
-mai.gamal@nu.edu.eg
