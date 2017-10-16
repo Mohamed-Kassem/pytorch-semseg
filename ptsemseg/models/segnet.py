@@ -22,6 +22,8 @@ class segnet(nn.Module):
         self.up2 = segnetUp2(128, 64)
         self.up1 = segnetUp2(64, n_classes)
 
+        self.init_decoder()
+
     def forward(self, inputs):
 
         down1, indices_1, unpool_shape1 = self.down1(inputs)
@@ -38,6 +40,18 @@ class segnet(nn.Module):
 
         return up1
 
+    def init_decoder(self):
+        # I didn't see much difference in overfit test using kaiming init, maybe cause it is just VGG
+        for name, parameter in self.named_parameters():
+            if name.startswith('up'): # init only decoder part (upsample part)
+                if name.find('cbr_unit.0.') >= 0: # init only conv modules and leave batch normalization modules
+                    if name.find('weight') >= 0:
+                        nn.init.kaiming_normal(parameter)
+                    elif name.find('bias') >= 0:
+                        parameter.data.fill_(1) # one to avoid dead relus?
+
+
+        #nn.init.kaiming_normal(w, mode='fan_out')
 
     def init_vgg16_params(self, vgg16):
         blocks = [self.down1,

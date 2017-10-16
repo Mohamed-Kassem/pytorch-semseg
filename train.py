@@ -19,6 +19,7 @@ from lr_scheduling import *
 
 import time
 import os
+import scipy.misc as misc
 
 def train(args):
     # time start
@@ -29,11 +30,12 @@ def train(args):
     data_path = get_data_path(args.dataset)
     loader = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
     n_classes = loader.n_classes
-    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle= not args.no_shuffle, pin_memory=True)
+    train_loader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle= not args.no_shuffle, pin_memory=False)
 
     if args.overfit:
-        train_loader.dataset.train_data = train_loader.dataset.train_data[:4*1, :, :]
-        train_loader.dataset.train_labels = train_loader.dataset.train_labels[:4*1]
+        train_loader.dataset.files['train_aug'] = train_loader.dataset.files['train_aug'][:25]
+        print train_loader.dataset.files['train_aug']
+        exit()
 
     # Setup visdom for visualization
     # vis = visdom.Visdom()
@@ -67,7 +69,7 @@ def train(args):
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
 
-            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=args.momentum, weight_decay=args.weight_decay)
             print("Length after filtering: ", len(list(filtered_params)) )
         elif args.exp_index == 1:
             print("Length before filtering: ", len(list(model.parameters())) )
@@ -76,17 +78,16 @@ def train(args):
             # sobel 3x3
             # filtered_params = filter(lambda p: not(p.size()[0] == 2 and p.size()[1] == 3 and p.size()[2] == 3 and p.size()[3] == 3), model.parameters())
 
-            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
+            optimizer = torch.optim.SGD(filtered_params, lr=args.l_rate, momentum=args.momentum, weight_decay=args.weight_decay)
             print("Length after filtering: ", len(list(filtered_params)) )
     else:
-        optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=args.weight_decay)
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=args.momentum, weight_decay=args.weight_decay)
 
     val_loader_instance = data_loader(data_path, split='val', is_transform=True, img_size=(args.img_rows, args.img_cols))
-    val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4, pin_memory=True)
+    val_loader = data.DataLoader(val_loader_instance, batch_size=args.batch_size, num_workers=4, pin_memory=False)
 
     if args.overfit:
-        val_loader.dataset.train_data = train_loader.dataset.train_data[:4*1, :, :]
-        val_loader.dataset.train_labels = train_loader.dataset.train_labels[:4*1]
+        val_loader.dataset.files['val'] = val_loader.dataset.files['train_aug'][:25]
 
     if args.resume:
         if os.path.isfile(args.resume):
@@ -106,6 +107,8 @@ def train(args):
     for epoch in range(args.start_epoch, args.n_epoch):
         for i, (images, labels) in enumerate(train_loader):
             #print('iteration: {}'.format(i))
+            # print(images[0,0,28:32,28:32])
+            # print(labels[0,28:32,28:32])
             if torch.cuda.is_available():
                 images = Variable(images.cuda(0))
                 labels = Variable(labels.cuda(0))
@@ -116,8 +119,7 @@ def train(args):
             iter = len(train_loader)*epoch + i
             #poly_lr_scheduler(optimizer, args.l_rate, iter, power=0) # power = 0 to disable scheduler 
             if args.arch == 'segnet':
-                adjust_learning_rate(optimizer, args.l_rate, epoch) # power = 0 to disable scheduler 
-            
+                adjust_learning_rate(optimizer, args.l_rate, epoch=0) # epoch = 0 to disable scheduler 
             optimizer.zero_grad()
             outputs = model(images)
 
@@ -136,8 +138,18 @@ def train(args):
             if (i+1) % 1 == 0:
                 #print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
                 end = time.time()
-                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i, len(train_loader), loss.data[0], end-start))
+                print("Epoch [%d/%d] Iteration [%d/%d] Loss: %.4f time(sec): %.1f" % (epoch+1, args.n_epoch, i+1, len(train_loader), loss.data[0], end-start))
                 start = time.time()
+
+                if args.overfit:
+                    if (epoch+1)%5 == 0:
+                        pred = outputs.data.max(1)[1].cpu().numpy()
+                        decoded = loader.decode_segmap(pred[0])
+                        #print np.unique(pred)
+                        # misc.imsave(str(i) + '_' + str(epoch)+'.png', decoded)
+                        misc.imsave(str(i) + '_' + '0_' + str(epoch)+'.png', decoded)
+                        decoded = loader.decode_segmap(pred[1,:,:])
+                        misc.imsave(str(i) + '_' + '1_' + str(epoch)+'.png', decoded)
 
         # test_output = model(test_image)
         # predicted = loader.decode_segmap(test_output[0].cpu().data.numpy().argmax(0))
@@ -157,7 +169,7 @@ def train(args):
             print("Validation starting on epoch: ", epoch+1)
             validate(train_loader, model, n_classes)
             validate(val_loader, model, n_classes)
-            filename_prefix = str(args.job_id) + '_' + str(args.exp_index) + '_' + args.arch+ '_' + str(args.batch_size) + '_' + str(args.l_rate) + '_concat_'
+            filename_prefix = str(args.job_id) + '_'
             save_checkpoint({
                         'epoch': epoch + 1,
                         'arch': args.arch,
@@ -259,6 +271,10 @@ if __name__ == '__main__':
                         help='overfit on small data')
     parser.add_argument('--no_shuffle', action='store_true', default=False,
                         help='Shuffle data during training')
+    parser.add_argument('--seed', type=int, default=1, metavar='S',
+                        help='random seed (default: 1)')
+    parser.add_argument('--momentum', type=float, default=0.9, metavar='S',
+                        help='SGD/ Adam momentum')
 
     parser.add_argument('--kassem', action='store_true', default=False,
                     help='kassem edges contribution')
@@ -270,12 +286,17 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(args.seed)
+
     if args.overfit:
         args.weight_decay = 0
+        args.no_shuffle = True
     else:
         args.weight_decay = 5e-4
+        args.no_shuffle = False
 
     for arg in vars(args):
         print(arg, getattr(args, arg))
-    exit()
     train(args)

@@ -87,6 +87,7 @@ class pascalVOCLoader(data.Dataset):
 
 
     def encode_segmap(self, mask):
+        # encode replaces pascal colored label with index for each class label (from rgb to 0:20)
         mask = mask.astype(int)
         label_mask = np.zeros((mask.shape[0], mask.shape[1]), dtype=np.int16)
         for i, label in enumerate(self.get_pascal_labels()):
@@ -96,6 +97,7 @@ class pascalVOCLoader(data.Dataset):
 
 
     def decode_segmap(self, temp, plot=False):
+        # from class index labels to rgb images
         label_colours = self.get_pascal_labels()
         r = temp.copy()
         g = temp.copy()
